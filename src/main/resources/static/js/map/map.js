@@ -413,7 +413,7 @@ function getCurPosInBackground(lati, longi) {
             }
             // console.log(result.length)
             // console.log("추가 "+result.length+"개 성공");
-            $('h2 span').text("현재 위치와 가까운 문화재가 " + result.length + "개 추가로 검색되었습니다. (" + count +" / 1050)")
+            $('h2 span').text("현재 위치와 가까운 문화재가 " + result.length + "개 추가로 검색되었습니다. (" + count + " / 1050)")
 
             $('h1 span').text("")
             // $('#search-keyword').attr('placeholder', "문화재 이름이나 시대를 검색해보세요.") // Todo: placehodler 바꾸려 했으나 잘 안됨
@@ -557,227 +557,72 @@ let photo_flag = false;
 
 // desc 마커 클릭시 상세 페이지 모달창으로 넘어가는 로직
 function moveToDetailPage(title) {
+
+
+    // desc 문화재청 tab 정보
     $.ajax({
         type: "POST",
-        url: "getThinkbigHeritageInfo",
-        // dataType: "json",
-
+        url: "getHeritageInfo",
         data: {
             title: title
         },
         success: function (result) {
-            // Todo: 웅진백과 결과 없으면? 정확도?
-            if (result.length === 0) { // desc 웅진백과 결과 없으면
-                $(".thinkbig-fieldset").hide();
+            // console.log("getHeritageInfo")
+            // Todo: 공공데이터 탭에 보여줄 내용 파싱해오기, Null 처리 해주기
 
-                // console.log("1")
-                photo_flag = true
-                //desc 내용 비우기
-                $(".modal-title-thinkbig").text("")
-                $(".carousel-inner").text("")
-                $(".modal-content-thinkbig").text("")
-                $("#modal-tags-thinkbig").text("")
+            if (result.length === 0) {
+                alert("정보가 없습니다.")
+            }
+            // console.log("result.imageUrl")
+            // console.log(result.imageUrl)
+            if (result.imageUrl === "" || result.imageUrl === null) {
+                console.log("img null")
+                $('.modal-img-public').html("이미지 정보가 없습니다.");
+            } else {
+                let text = "<img src=\"" + result.imageUrl + "\"/>"
+                $('.modal-img-public').html(text);
 
-                // desc 방법1
-                //$(".thinkbig-fieldset").hide();
+            }
+            if (result.ccceName === "") { // 시대가 없으면 연표정보 더보기 숨기기
 
-                // $("#tab01").hide();
-                // $("#tab011").hide();
-                // $("#tab02").children("h6").removeClass("text-muted");
-                // $("#tab02").children("h6").addClass("font-weight-bold");
-                // $("#tab02").addClass("active");
+                $("#more-time-info").hide();
+            } else {
+                $("#more-time-info").show();
 
-                // desc 방법2: default를 문화재청으로
-                $(".tabs").removeClass("active");
-                $(".tabs h6").removeClass("font-weight-bold");
-                $(".tabs h6").addClass("text-muted");
-                $("#tab02").children("h6").removeClass("text-muted");
-                $("#tab02").children("h6").addClass("font-weight-bold");
-                $("#tab02").addClass("active");
+            }
+            $('.modal-ccbaLcad-public').html(result.ccbaLcad);
+            $('.modal-ccmaName-public').html(result.ccmaName);
+            $('.modal-ccceName-public').html(result.ccceName); // 시대
+            $('.modal-content-public').html(result.content);
 
-                $("fieldset").removeClass("show");
-                $("#tab021").addClass("show");
+            getPublicDataTag(result.no); // desc 태그 가져오기 - 비동기처리
 
-                $("#tab01").removeClass("container-able"); // desc 클릭 불가 지우기
+            if (result.ccceName !== "") { // desc 시대쪽 정보가 있을 경우
+                console.log("시대 정보 있음")
+                console.log(result.ccceName)
 
-                $("#tab01").addClass("container-disable"); // desc 클릭 가능 추가
+                // 시대쪽 태그 보이기
+                $(".time-table").show();
 
+                getTimeInfoByCcceName(result.ccceName) // desc 이 시기 연표 정보 가져오기 - 비동기처리
+                // console.log("before getMoreTimeInfo")
+                // getMoreTimeInfo(result.ccceName)
+            } else { // // desc 시대쪽 정보가 없는 경우
+                console.log("시대 정보 없음")
+                console.log(result.ccceName)
 
+                // 시대쪽 태그 숨기기
+                $(".time-table").hide();
 
-            } else { // desc 웅진백과 결과 잇으면
-                photo_flag = false
-
-                $("#tab01").removeClass("container-disable"); // desc 클릭 가능을 지우기
-                $("#tab01").addClass("container-able"); // desc 클릭 불가
-
-
-                $(".thinkbig-fieldset").show();
-
-                $(".tabs").removeClass("active");
-                $(".tabs h6").removeClass("font-weight-bold");
-                $(".tabs h6").addClass("text-muted");
-                $("#tab01").children("h6").removeClass("text-muted");
-                $("#tab01").children("h6").addClass("font-weight-bold");
-                $("#tab01").addClass("active");
-
-                current_fs = $(".active");
-
-
-                $("fieldset").removeClass("show");
-                $("#tab011").addClass("show");
-
-                current_fs.animate({}, {
-                    step: function () {
-                        current_fs.css({
-                            'display': 'none',
-                            'position': 'relative'
-                        });
-                        next_fs.css({
-                            'display': 'block'
-                        });
-                    }
-                });
-
-                $('.modal-content-thinkbig').html(result.content);
 
             }
 
-
-            // desc 태그 가져오는 비동기처리
-            $.ajax({
-                type: "POST",
-                url: "getThinkbigTag",
-                data: {
-                    title: title
-                },
-                success: function (result) {
-
-                    let text = ""
-
-                    $.each(result, function (index, keyword) {
-                        text += '<h5><span id="modal-tags-thinkbig" class="badge badge-warning badge-secondary" style="margin-right: 3px"> #' + keyword + '</span></h5>'
-                    })
-                    $('#modal-tags-thinkbig').html(text)
-
-                },
-                error: function (result) {
-                    console.log('error getThinkbigTag');
-                }
-            });
-
-            // desc 사진들 가져오는 비동기처리
-
-            $.ajax({
-                type: "POST",
-                url: "getThinkbigPhotos",
-                data: {
-                    title: title
-                },
-                success: function (result) {
-                    if (photo_flag)//백과 결과 없으면
-                    {
-                        $('.carousel-inner').html()
-                        return;
-                    }
-
-                    // console.log("getThinkbigPhotos");
-                    let text = ""
-
-                    if (result.length === 0) {
-                        text = '<img class="w-100" src="../../image/noimage.png" alt="no_image">'
-                        $('.carousel-inner').html(text)
-                        return;
-                    }
-
-
-                    $.each(result, function (index, imgUrl) {
-                        if (index === 0) {
-                            text += '<div class="carousel-item active"><img class="w-100" src="' + imgUrl + '" alt="image"> </div>'
-                        } else {
-                            text += '<div class="carousel-item"><img class="w-100" src="' + imgUrl + '" alt="image"> </div>'
-
-                        }
-                        // console.log(imgUrl)
-
-                    })
-                    $('.carousel-inner').html(text)
-
-                },
-                error: function (result) {
-                    console.log('error getThinkbigPhotos');
-                }
-            });
-
-
-            // desc 문화재청 tab 정보
-            $.ajax({
-                type: "POST",
-                url: "getHeritageInfo",
-                data: {
-                    title: title
-                },
-                success: function (result) {
-                    // console.log("getHeritageInfo")
-                    // Todo: 공공데이터 탭에 보여줄 내용 파싱해오기, Null 처리 해주기
-
-                    if (result.length === 0) {
-                        alert("정보가 없습니다.")
-                    }
-                    // console.log("result.imageUrl")
-                    // console.log(result.imageUrl)
-                    if (result.imageUrl === "" || result.imageUrl === null) {
-                        console.log("img null")
-                        $('.modal-img-public').html("이미지 정보가 없습니다.");
-                    } else {
-                        let text = "<img src=\"" + result.imageUrl + "\"/>"
-                        $('.modal-img-public').html(text);
-
-                    }
-                    if (result.ccceName === "") { // 시대가 없으면 연표정보 더보기 숨기기
-
-                        $("#more-time-info").hide();
-                    } else {
-                        $("#more-time-info").show();
-
-                    }
-                    $('.modal-ccbaLcad-public').html(result.ccbaLcad);
-                    $('.modal-ccmaName-public').html(result.ccmaName);
-                    $('.modal-ccceName-public').html(result.ccceName); // 시대
-                    $('.modal-content-public').html(result.content);
-
-                    getPublicDataTag(result.no); // desc 태그 가져오기 - 비동기처리
-
-                    if (result.ccceName !== "") { // desc 시대쪽 정보가 있을 경우
-                        console.log("시대 정보 있음")
-                        console.log(result.ccceName)
-
-                        // 시대쪽 태그 보이기
-                        $(".time-table").show();
-
-                        getTimeInfoByCcceName(result.ccceName) // desc 이 시기 연표 정보 가져오기 - 비동기처리
-                        // console.log("before getMoreTimeInfo")
-                        // getMoreTimeInfo(result.ccceName)
-                    } else { // // desc 시대쪽 정보가 없는 경우
-                        console.log("시대 정보 없음")
-                        console.log(result.ccceName)
-
-                        // 시대쪽 태그 숨기기
-                        $(".time-table").hide();
-
-
-                    }
-
-                },
-                error: function (result) {
-                    console.log('error getHeritageInfo');
-                }
-            });
-
         },
         error: function (result) {
-            console.log('error getThinkbigHeritageInfo');
+            console.log('error getHeritageInfo');
         }
     });
+
 
 }
 

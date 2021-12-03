@@ -1,6 +1,5 @@
 package com.yooyeon.culturalpropertymap.history.service;
 
-import com.yooyeon.culturalpropertymap.config.auth.dto.SessionUser;
 import com.yooyeon.culturalpropertymap.heritage.domain.Heritage;
 import com.yooyeon.culturalpropertymap.heritage.domain.Tag;
 import com.yooyeon.culturalpropertymap.history.domain.ReadingHistory;

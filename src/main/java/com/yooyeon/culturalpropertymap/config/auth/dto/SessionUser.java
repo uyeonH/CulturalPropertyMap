@@ -21,7 +21,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Table(name="session_user")
 public class SessionUser implements Serializable {
     private static final long serialVersionUID = 178630l;
 
@@ -31,15 +30,16 @@ public class SessionUser implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private final List<SearchHistory> searchHistories = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private final List<ReadingHistory> readingHistories = new ArrayList<>();
     @CreatedDate
     private LocalDateTime createdDate;
     @LastModifiedDate
     private LocalDateTime modifiedDate;
+
     public SessionUser(User user) {
         this.name = user.getName();
         this.email = user.getEmail();

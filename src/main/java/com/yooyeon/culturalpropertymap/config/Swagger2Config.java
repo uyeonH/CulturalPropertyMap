@@ -16,7 +16,7 @@ public class Swagger2Config {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2).select()
-                .apis(RequestHandlerSelectors.basePackage("com.thinkbig.intern.culturalheritage"))
+                .apis(RequestHandlerSelectors.basePackage("com.yooyeon.culturalpropertymap"))
                 .paths(PathSelectors.any())
                 .build();
     }

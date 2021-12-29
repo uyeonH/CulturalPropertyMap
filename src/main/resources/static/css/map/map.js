@@ -733,13 +733,7 @@ function moveToDetailPage(title) {
                         $('.modal-img-public').html(text);
 
                     }
-                    if (result.ccceName === "") { // 시대가 없으면 연표정보 더보기 숨기기
 
-                        $("#more-time-info").hide();
-                    } else {
-                        $("#more-time-info").show();
-
-                    }
                     $('.modal-ccbaLcad-public').html(result.ccbaLcad);
                     $('.modal-ccmaName-public').html(result.ccmaName);
                     $('.modal-ccceName-public').html(result.ccceName); // 시대
@@ -754,9 +748,7 @@ function moveToDetailPage(title) {
                         // 시대쪽 태그 보이기
                         $(".time-table").show();
 
-                        getTimeInfoByCcceName(result.ccceName) // desc 이 시기 연표 정보 가져오기 - 비동기처리
-                        // console.log("before getMoreTimeInfo")
-                        // getMoreTimeInfo(result.ccceName)
+
                     } else { // // desc 시대쪽 정보가 없는 경우
                         console.log("시대 정보 없음")
                         console.log(result.ccceName)
@@ -781,45 +773,6 @@ function moveToDetailPage(title) {
 
 }
 
-// desc 이 시기 연표 정보 가져오기 - 비동기처리
-function getTimeInfoByCcceName(ccceName) {
-    $.ajax({
-        type: "POST",
-        url: "getTimeInfoByCcceName",
-        data: {
-            ccceName: ccceName
-        },
-        success: function (result) {
-            // console.log("getTimeInfoByCcceName")
-            console.log(result)
-            if (result.length === 0) {
-                $('.time-table').hide();
-                return;
-            }
-            console.log("1")
-
-            $('.time-table').show();
-            console.log("2")
-
-            let text = ''
-            $.each(result, function (index, obj) {
-
-                text += '<tr class="m-0"><td class="w-8">' + obj.time + '</td><td class="w-20">' + obj.timeTitle + '</td><td class="w-30">' + obj.timeDscr + '</td></tr>' // 시기, 사건, 설명 넣으면 됨
-
-            })
-            console.log("3")
-
-            $('.time-table-tbody').html(text);
-            console.log("4")
-
-        },
-
-        error: function (request, status, error) {
-            console.log("error getTimeInfoByCcceName")
-            console.log("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
-        }
-    });
-}
 
 // desc 문화재청 태그
 function getPublicDataTag(no) {

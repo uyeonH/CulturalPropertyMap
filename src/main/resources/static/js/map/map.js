@@ -1,5 +1,5 @@
 // document.write("<script src='//dapi.kakao.com/v2/maps/sdk.js?appkey=21fe492d0acd4e2194c4448b9796bb1c\"></script>);
-// <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=21fe492d0acd4e2194c4448b9796bb1c"></script>
+//  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=373395f71d3af18c8245e988a13bb05b"></script>
 
 const imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
 // 마커 이미지의 이미지 크기 입니다

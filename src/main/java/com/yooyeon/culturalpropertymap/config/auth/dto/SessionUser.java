@@ -18,6 +18,7 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 
 @NoArgsConstructor
+
 @Entity
 @Getter
 @Table(name="session_user")

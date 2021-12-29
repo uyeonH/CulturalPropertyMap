@@ -26,7 +26,12 @@ public class MapController {
     private final HttpSession httpSession;
     private final HeritageService heritageService;
     private String ccce = null;
+    @GetMapping("sample-map")
+    public String sampleMap(Model model) {
 
+
+        return "sample-map";
+    }
 
     @GetMapping("map")
     public String kakaoMap(Model model) {
